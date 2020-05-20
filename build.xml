@@ -6,8 +6,13 @@
 			<include name="*.jar"/>
 		</fileset>
 	</path>
+        <target name="downloadDepend">
+    	   <exec executable="/usr/local/bin/jfrog">  
+              <arg line="rt dl  --flat=true --build-name=my-build-name --build-number=18 ant-generic-local/project-a/v1/* WebContent/WEB-INF/lib/"/>  
+           </exec>  
+	</target>
 	
-	<target name="init">
+	<target name="init" depends="downloadDepend">
 		<mkdir dir="build/classes"/>
 		<mkdir dir="dist" />
 	</target>
@@ -25,6 +30,14 @@
 			<classes dir="build/classes"/>
 		</war>
 	</target>
+        <target name="publish" depends="war">
+           <exec executable="/usr/local/bin/jfrog">
+              <arg line="rt u dist/AntExample.war ant-generic-local/project-a-diliver/  --build-name=my-build-name --build-number=18"/>
+           </exec>
+   	   <exec executable="/usr/local/bin/jfrog">
+		<arg line="rt bp my-build-name 18" />
+           </exec>
+        </target>
 	
 	<target name="clean">
 		<delete dir="dist" />
